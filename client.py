@@ -1,8 +1,7 @@
 import socket
 import argparse
 import threading
-from json import loads,dumps
-
+from json import loads, dumps
 
 
 def receive_messages():

@@ -6,38 +6,33 @@ import argparse
 
 clients = []
 
+
 def generate_json_data():
-    with open("config.json","w") as data:
+    with open("config.json", "w") as data:
         server_ip = str(input("Enter server IP: "))
         try:
             server_port = int(input("Enter server port: "))
+            server_size = int(input("Enter server size:"))
         except ValueError:
             print("Enter integer!")
             server_port = int(input("Enter server port: "))
         config = {
-            "server-ip":server_ip,
-            "server-port":server_port
+            "server-ip": server_ip,
+            "server-port": server_port,
+            "server-size": server_size
         }
         config = dumps(config)
         data.write(config)
 
+
 def get_json_data():
     try:
-        with open("config.json","r") as data:
+        with open("config.json", "r") as data:
             data = data.read()
             data = loads(data)
             return data
     except FileNotFoundError:
         generate_json_data()
-        get_json_data()
-    
-
-def get_user_input():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--user-size",
-                        help="Maximum user size.", dest="usersize", default=3)
-    args = parser.parse_args()
-    return args
 
 
 def broadcast_data(clients, data):
@@ -79,7 +74,16 @@ def start_server(ip, port, usersize):
         server.close()
 
 
-args = get_user_input()
-
 data = get_json_data()
-start_server(data["server-ip"], data["server-port"], args.usersize)
+
+try:
+    start_server(data["server-ip"], data["server-port"], data["server-size"])
+except TypeError:
+    data = get_json_data()
+    start_server(data["server-ip"], data["server-port"], data["server-size"])
+except KeyError:
+    default_arguments = ["server-ip", "server-port", "server-size"]
+    missin_arguments = list(default_arguments-data.keys())
+    for i in missin_arguments:
+        print(f"Missing Argument: {i}")
+        
