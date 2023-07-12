@@ -1,7 +1,7 @@
 # CLI Chat App
 
 ## Server
-`    python3 server.py
+`python3 server.py
 `
 
 *User size is optional, default value: 10
