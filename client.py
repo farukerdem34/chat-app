@@ -1,26 +1,29 @@
 import socket
 import argparse
 import threading
+from json import loads,dumps
 
 
 def receive_messages():
     while True:
-        message = client.recv(1024).decode()
-        print(f"{message}\n")
-        if message == "exit":
-            break
+        data = client.recv(1024)
+        data = loads(data)
+        username = data["username"]
+        message = data["message"]
+        print("\n"+username + ": " + message)
 
-    client.close()
 
-# @TODO Send messages with base64
-def send_message():
+def send_message(username, client):
     while True:
         message = input("Enter a message: ")
-        client.send(message.encode())
+        data = {
+            "message": message,
+            "username": username
+        }
+        data = dumps(data).encode("utf-8")
+        client.send(data)
         if message == "exit":
-            break
-
-    client.close()
+            client.close()
 
 
 def get_user_input():
@@ -29,6 +32,7 @@ def get_user_input():
                         help="Destination server IP address.", dest="dest")
     parser.add_argument(
         "-p", "--port", help="Server port number.", dest="port")
+    parser.add_argument("-u", "--username", help="Username.", dest="username")
     args = parser.parse_args()
     return args
 
@@ -41,4 +45,4 @@ client.connect((str(args.dest), int(args.port)))
 receive_thread = threading.Thread(target=receive_messages)
 receive_thread.start()
 
-send_message()
+send_message(args.username, client)

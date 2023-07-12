@@ -1,13 +1,15 @@
 import threading
 import socket
-import json
+from json import loads,dumps
+
+
 
 clients = []
 
 
-def broadcast_message(clients, message):
+def broadcast_data(clients, data):
     for client in clients:
-        client.send(message.encode())
+        client.send(data)
 
 
 def add_new_client(client):
@@ -17,9 +19,12 @@ def add_new_client(client):
 
 def handle_client(client):
     while True:
-        message = client.recv(1024).decode()
-        print(f"{message}\n")
-        broadcast_message(clients, message)
+        data = client.recv(1024)
+        broadcast_data(clients, data)
+        data = loads(data)
+        message = data["message"]
+        username = data["username"]
+        print(username + ": " + message)
 
 
 def start_server(ip, port):
@@ -32,7 +37,7 @@ def start_server(ip, port):
 
         while True:
             client, client_address = server.accept()
-            print(f"Accepted connection from: {client_address}\n")
+            print(f"Accepted connection from: {client_address}")
             add_new_client(client)
             client_thread = threading.Thread(
                 target=handle_client, args=(client,))
