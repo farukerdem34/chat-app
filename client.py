@@ -2,15 +2,23 @@ import socket
 import argparse
 import threading
 from json import loads, dumps
+from json.decoder import JSONDecodeError
 
 
 def receive_messages():
     while True:
-        data = client.recv(1024)
-        data = loads(data)
-        username = data["username"]
-        message = data["message"]
-        print("\n"+username + ": " + message)
+        try:
+            data = client.recv(1024)
+            data = loads(data)
+            username = data["username"]
+            message = data["message"]
+            print("\n"+username + ": " + message)
+        except ConnectionAbortedError:
+            client.close()
+            break
+        except OSError:
+            client.close()
+            break
 
 
 def send_message(username):
@@ -19,12 +27,22 @@ def send_message(username):
             message = input()
         except KeyboardInterrupt:
             client.close()
-        data = {
-            "message": message,
-            "username": username
-        }
-        data = dumps(data).encode("utf-8")
-        client.send(data)
+        if message[0] == "!":
+            message = message[0:]
+            if message == "exit":
+                client.close()
+                break
+        else:
+            data = {
+                "message": message,
+                "username": username
+            }
+            data = dumps(data).encode("utf-8")
+            try:
+                client.send(data)
+            except OSError:
+                client.close()
+                break
 
 
 def get_user_input():

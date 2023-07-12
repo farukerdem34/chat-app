@@ -8,20 +8,21 @@ clients = []
 
 
 def reset_log_file():
-    with open("log.txt", "w",encoding="utf-8") as log:
+    with open("log.txt", "w", encoding="utf-8") as log:
         log.write("")
 
 
 def write_log_file(data):
     username = (data["username"])
     message = data["message"]
+
     def write_message(username, message, log):
         log.write(f"{username}: {message}\n")
     try:
-        with open("log.txt", "a",encoding="utf-8") as log:
+        with open("log.txt", "a", encoding="utf-8") as log:
             write_message(username, message, log)
     except FileNotFoundError:
-        with open("log.txt", "w",encoding="utf-8") as log:
+        with open("log.txt", "w", encoding="utf-8") as log:
             write_message(username, message, log)
 
 
@@ -66,19 +67,25 @@ def add_new_client(client):
 
 def handle_client(client):
     while True:
-        data = client.recv(1024)
-        broadcast_data(clients, data, client)
-        data = loads(data)
-        message = data["message"]
-        if message[0] == "!":
-            message = message[0:]
-            if message == "exit":
-                clients.remove(client)
-                client.close()
-        username = data["username"]
-        print(username + ": " + message)
-        write_log_file(data)
-
+        try:
+            data = client.recv(1024)
+            broadcast_data(clients, data, client)
+            data = loads(data)
+            message = data["message"]
+            if message[0] == "!":
+                message = message[0:]
+                if message == "exit":
+                    clients.remove(client)
+                    client.close()
+                    break
+            else:
+                username = data["username"]
+                print(username + ": " + message)
+                write_log_file(data)
+        except:
+            clients.remove(client)
+            client.close()
+            break
 
 
 def start_server(ip, port, usersize):
