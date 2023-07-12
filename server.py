@@ -1,10 +1,18 @@
 import threading
 import socket
-from json import loads,dumps
-
+from json import loads, dumps
+import argparse
 
 
 clients = []
+
+
+def get_user_input():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--user-size",
+                        help="Maximum user size.", dest="usersize", default=3)
+    args = parser.parse_args
+    return args
 
 
 def broadcast_data(clients, data):
@@ -27,12 +35,12 @@ def handle_client(client):
         print(username + ": " + message)
 
 
-def start_server(ip, port):
+def start_server(ip, port, usersize):
     try:
 
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((ip, port))
-        server.listen(10)
+        server.listen(usersize)
         print(f"Server started, listening on port {port}")
 
         while True:
@@ -46,4 +54,6 @@ def start_server(ip, port):
         server.close()
 
 
-start_server("localhost", 8000)
+args = get_user_input()
+
+start_server("localhost", 8000, args.usersize)
