@@ -13,17 +13,18 @@ def receive_messages():
         print("\n"+username + ": " + message)
 
 
-def send_message(username, client):
+def send_message(username):
     while True:
-        message = input()
+        try:
+            message = input()
+        except KeyboardInterrupt:
+            client.close()
         data = {
             "message": message,
             "username": username
         }
         data = dumps(data).encode("utf-8")
         client.send(data)
-        if message == "exit":
-            client.close()
 
 
 def get_user_input():
@@ -45,4 +46,4 @@ client.connect((str(args.dest), int(args.port)))
 receive_thread = threading.Thread(target=receive_messages)
 receive_thread.start()
 
-send_message(args.username, client)
+send_message(args.username)

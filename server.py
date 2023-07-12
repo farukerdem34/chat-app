@@ -35,9 +35,10 @@ def get_json_data():
         generate_json_data()
 
 
-def broadcast_data(clients, data):
+def broadcast_data(clients, data, sender):
     for client in clients:
-        client.send(data)
+        if client != sender:
+            client.send(data)
 
 
 def add_new_client(client):
@@ -48,9 +49,14 @@ def add_new_client(client):
 def handle_client(client):
     while True:
         data = client.recv(1024)
-        broadcast_data(clients, data)
+        broadcast_data(clients, data, client)
         data = loads(data)
         message = data["message"]
+        if message[0] == "!":
+            message = message[0:]
+            if message == "exit":
+                clients.remove(client)
+                client.close()
         username = data["username"]
         print(username + ": " + message)
 
@@ -86,4 +92,3 @@ except KeyError:
     missin_arguments = list(default_arguments-data.keys())
     for i in missin_arguments:
         print(f"Missing Argument: {i}")
-        
