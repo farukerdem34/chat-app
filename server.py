@@ -36,7 +36,7 @@ def get_user_input():
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--user-size",
                         help="Maximum user size.", dest="usersize", default=3)
-    args = parser.parse_args
+    args = parser.parse_args()
     return args
 
 

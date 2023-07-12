@@ -16,7 +16,7 @@ def receive_messages():
 
 def send_message(username, client):
     while True:
-        message = input("Enter a message: ")
+        message = input()
         data = {
             "message": message,
             "username": username
