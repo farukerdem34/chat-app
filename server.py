@@ -7,6 +7,24 @@ import argparse
 clients = []
 
 
+def reset_log_file():
+    with open("log.txt", "w",encoding="utf-8") as log:
+        log.write("")
+
+
+def write_log_file(data):
+    username = (data["username"])
+    message = data["message"]
+    def write_message(username, message, log):
+        log.write(f"{username}: {message}\n")
+    try:
+        with open("log.txt", "a",encoding="utf-8") as log:
+            write_message(username, message, log)
+    except FileNotFoundError:
+        with open("log.txt", "w",encoding="utf-8") as log:
+            write_message(username, message, log)
+
+
 def generate_json_data():
     with open("config.json", "w") as data:
         server_ip = str(input("Enter server IP: "))
@@ -59,11 +77,13 @@ def handle_client(client):
                 client.close()
         username = data["username"]
         print(username + ": " + message)
+        write_log_file(data)
+
 
 
 def start_server(ip, port, usersize):
+    reset_log_file()
     try:
-
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((ip, port))
         server.listen(usersize)
