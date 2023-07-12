@@ -6,6 +6,31 @@ import argparse
 
 clients = []
 
+def generate_json_data():
+    with open("config.json","w") as data:
+        server_ip = str(input("Enter server IP: "))
+        try:
+            server_port = int(input("Enter server port: "))
+        except ValueError:
+            print("Enter integer!")
+            server_port = int(input("Enter server port: "))
+        config = {
+            "server-ip":server_ip,
+            "server-port":server_port
+        }
+        config = dumps(config)
+        data.write(config)
+
+def get_json_data():
+    try:
+        with open("config.json","r") as data:
+            data = data.read()
+            data = loads(data)
+            return data
+    except FileNotFoundError:
+        generate_json_data()
+        get_json_data()
+    
 
 def get_user_input():
     parser = argparse.ArgumentParser()
@@ -56,4 +81,5 @@ def start_server(ip, port, usersize):
 
 args = get_user_input()
 
-start_server("localhost", 8000, args.usersize)
+data = get_json_data()
+start_server(data["server-ip"], data["server-port"], args.usersize)
