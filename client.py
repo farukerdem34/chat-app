@@ -12,7 +12,7 @@ def receive_messages():
 
     client.close()
 
-
+# @TODO Send messages with base64
 def send_message():
     while True:
         message = input("Enter a message: ")
