@@ -1,8 +1,14 @@
 import socket
 import argparse
+import sys
 import threading
 from json import loads, dumps
 from json.decoder import JSONDecodeError
+
+
+#TODO File Upload 
+
+#TODO File Download Request
 
 
 def receive_messages():
@@ -12,7 +18,7 @@ def receive_messages():
             data = loads(data)
             username = data["username"]
             message = data["message"]
-            print("\n"+username + ": " + message)
+            print(username + ": " + message)
         except ConnectionAbortedError:
             client.close()
             break
