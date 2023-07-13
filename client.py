@@ -1,14 +1,21 @@
 import socket
 import argparse
-import sys
 import threading
 from json import loads, dumps
 from json.decoder import JSONDecodeError
+from base64 import b64decode, b64encode
 
 
-#TODO File Upload 
+# TODO File Upload
 
-#TODO File Download Request
+def open_file(file):
+    with open(file, "r") as data:
+        data = data.read()
+        data = bytes(data)
+        data = b64encode(data)
+        return data
+
+# TODO File Download Request
 
 
 def receive_messages():
@@ -33,11 +40,9 @@ def send_message(username):
             message = input()
         except KeyboardInterrupt:
             client.close()
-        if message[0] == "!":
-            message = message[0:]
-            if message == "exit":
-                client.close()
-                break
+        if message == "!exit":
+            client.close()
+            break
         else:
             data = {
                 "message": message,

@@ -1,2 +1,1 @@
-lomar: hii
-lomar: h,,,,
+lomar: hi
